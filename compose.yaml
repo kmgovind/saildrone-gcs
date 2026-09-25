@@ -1,0 +1,49 @@
+name: saildrone-gcs
+
+x-ros-service: &ros-service
+  build:
+    context: .
+    dockerfile: docker/Dockerfile
+  image: saildrone/gcs:lyrical
+  network_mode: host
+  init: true
+  restart: unless-stopped
+  environment:
+    ROS_DOMAIN_ID: ${ROS_DOMAIN_ID:-0}
+
+services:
+  mavlink-router:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile.mavlink-router
+    image: saildrone/mavlink-router:v4
+    network_mode: host
+    init: true
+    restart: unless-stopped
+    devices:
+      - ${RFD900_DEVICE:?Set RFD900_DEVICE to a /dev/serial/by-id path}:/dev/rfd900
+    group_add:
+      - ${DIALOUT_GID:-20}
+    volumes:
+      - ./config/mavlink-router.conf:/etc/mavlink-router/main.conf:ro
+
+  mavros:
+    <<: *ros-service
+    depends_on:
+      - mavlink-router
+    command:
+      - ros2
+      - launch
+      - mavros
+      - px4.launch
+      - fcu_url:=tcp://127.0.0.1:5760
+
+  foxglove-bridge:
+    <<: *ros-service
+    command:
+      - ros2
+      - launch
+      - foxglove_bridge
+      - foxglove_bridge_launch.xml
+      - address:=0.0.0.0
+      - port:=8765

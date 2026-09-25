@@ -31,6 +31,7 @@ router when required.
 - `config/`: MAVROS, routing, QoS, and radio configuration.
 - `launch/`: Top-level launch entry points.
 - `tools/`: Setup and operational helper scripts.
+- `docker/` and `compose.yaml`: Reproducible ROS and telemetry runtime.
 
 ROS packages target ROS 2 Lyrical on Ubuntu 26.04. Package manifests and launch
 files will be generated as their behavior is defined.

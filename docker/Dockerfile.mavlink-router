@@ -1,0 +1,30 @@
+FROM ubuntu:26.04 AS build
+
+ENV DEBIAN_FRONTEND=noninteractive
+
+RUN apt-get update && apt-get install -y --no-install-recommends \
+      ca-certificates \
+      g++ \
+      git \
+      libsystemd-dev \
+      meson \
+      ninja-build \
+      pkg-config && \
+    rm -rf /var/lib/apt/lists/*
+
+RUN git clone --branch v4 --depth 1 --recurse-submodules \
+      https://github.com/mavlink-router/mavlink-router.git /src/mavlink-router && \
+    meson setup /src/mavlink-router/build /src/mavlink-router && \
+    ninja -C /src/mavlink-router/build
+
+FROM ubuntu:26.04
+
+RUN apt-get update && apt-get install -y --no-install-recommends \
+      libstdc++6 \
+      libsystemd0 && \
+    rm -rf /var/lib/apt/lists/*
+
+COPY --from=build /src/mavlink-router/build/src/mavlink-routerd /usr/local/bin/mavlink-routerd
+
+ENTRYPOINT ["/usr/local/bin/mavlink-routerd"]
+CMD ["-c", "/etc/mavlink-router/main.conf"]
