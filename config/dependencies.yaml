@@ -1,0 +1,21 @@
+platform:
+  os: ubuntu
+  os_version: "26.04"
+  architecture: amd64
+  ros_distro: lyrical
+  ros_support_end: "2031-05"
+
+transport:
+  vehicle_link: mavlink
+  radio: rfd900_plus
+  ros_adapter: mavros
+  serial_owner: mavlink_router
+
+visualization:
+  bridge: foxglove_bridge
+  client: foxglove
+
+policy:
+  allow_ros_rolling: false
+  direct_xrce_dds_over_radio: false
+  direct_remote_actuator_control: false
