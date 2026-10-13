@@ -35,3 +35,6 @@ router when required.
 
 ROS packages target ROS 2 Lyrical on Ubuntu 26.04. Package manifests and launch
 files will be generated as their behavior is defined.
+
+The onboard controller also emits the low-rate `sail_ctrl` MAVLink debug array
+described in [`docs/controller-telemetry.md`](docs/controller-telemetry.md).
